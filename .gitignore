@@ -9,6 +9,12 @@ config.json
 *.bak
 *.bak-*
 
+# Local DSH backups and one-off personal helpers (never publish)
+dsh-profile-backup-*/
+auto-accept-owner.mjs
+auto-accept-friend-ws.mjs
+restore-dsh-profile.ps1
+
 # Local development / planning / research docs (not part of public project)
 /PROJECT_GUIDE.md
 /ARCH_REVIEW.md
