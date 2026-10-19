@@ -1,3 +1,16 @@
+# 小鲸鱼计划 v1.0（公开定制 fork）
+
+本仓库是 [qq-bridge](https://github.com/Derpyu520/qq-bridge) 的公开 fork，用于维护「小鲸鱼」这套个人 QQ Agent 的定制层。
+
+- 项目事实、架构、已验证能力、运行方式：[PROJECT.md](PROJECT.md)
+- 启动与恢复：[README-启动说明.md](README-启动说明.md)
+- QQ 管理命令：[README-QQ管理.md](README-QQ管理.md)
+
+本仓库不包含 token、`config.json`、`state`、QQ 聊天记录、DSH 备份和本机个人角色卡。  
+以下为上游 qq-bridge 的原始 README。
+
+---
+
 # QQ ↔ DeepSeek Harness 桥接
 
 **English**: [README.en.md](README.en.md) | **中文**: [README.md](README.md)
