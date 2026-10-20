@@ -1,6 +1,6 @@
 # 小鲸鱼计划 · PROJECT
 
-> **版本：v1.0**  
+> **版本：v1.0.1**  
 > **文档日期：2026-10-20**  
 > **形态：单用户、单机、Windows 桌面上的个人 QQ Agent**  
 > **文档性质：只记录已经实现并验证的事实。**
@@ -21,7 +21,7 @@ QQ 私聊
 ```
 
 当前模式为 `closed-agent`：只接受 owner 的 QQ 私聊，同时拥有本机完整工具权限。  
-机器人 QQ 与 owner QQ 已建立好友关系，私聊收发、图片发送、空间发/删、主动消息、日记、一键启动均已实测。
+机器人 QQ 与 owner QQ 已建立好友关系，私聊收发、图片发送、空间发/删、主动消息、日记、睡醒补消息、一键启动均已实测。
 
 ---
 
@@ -30,7 +30,7 @@ QQ 私聊
 ### 1.1 项目定位
 
 - 项目名：**小鲸鱼计划 / XiaoJingYu**
-- 版本：**v1.0**
+- 版本：**v1.0.1**
 - 使用者：一个 owner
 - 运行环境：一台 Windows 桌面机
 - 入口：QQ 私聊
@@ -54,7 +54,7 @@ QQ 私聊
 
 ---
 
-## 2. v1.0 已验证事实
+## 2. v1.0 / v1.0.1 已验证事实
 
 以下项目均已实际跑通（已验证，不是设想）：
 
@@ -79,6 +79,8 @@ QQ 私聊
 | 日记 | 00:00 任务已实际触发，小鲸鱼自行写入 4 条 19 日、4 条 20 日内容（20 日测试条目已删除，避免重复） |
 | 晨读 | 08:00 晨读提示已实际触发 |
 | 一键启动 | 全服务 warm 校验通过；停掉桥接后 cold 启动通过；`.bat` warm 测试通过 |
+| 睡醒补消息 | 关机期间 20:08 的消息，20:09 启动后补回一次，无重复 |
+| 角色离线语义 | 本地角色卡写入“关机=睡觉、开机=睡醒”；重载返回 200 |
 | DSH 热加载 | 修改 role 后通过 `POST /api/role` 重载返回 200，无需重启 DSH |
 
 ---
@@ -355,7 +357,7 @@ Invoke-RestMethod http://127.0.0.1:3100/api/status -Headers @{ 'x-console-token'
 
 | 路径 | 内容 |
 |---|---|
-| `D:\Temp\qq-bridge\VERSION` | 版本号 `v1.0` |
+| `D:\Temp\qq-bridge\VERSION` | 版本号 `v1.0.1` |
 | `D:\Temp\qq-bridge\config.json` | bridge 配置（含 token，勿外传） |
 | `D:\Temp\SnowLuma\config\onebot_<机器人QQ>.json` | OneBot HTTP/WS token |
 | `state\sessions.json` | QQ 会话 → DSH session 映射 |
@@ -364,6 +366,8 @@ Invoke-RestMethod http://127.0.0.1:3100/api/status -Headers @{ 'x-console-token'
 | `state\proactive.log` | 主动消息日志 |
 | `state\diary-state.json` | 日记状态 |
 | `state\diary.log` | 日记日志 |
+| `state\catchup-state.json` | 睡醒补消息基线 |
+| `state\catchup.log` | 睡醒补消息日志 |
 | `state\小鲸鱼-日记.md` | 日记本体 |
 | `state\bridge.log` | 桥接日志 |
 | `state\start-all.log` | 一键启动日志 |
@@ -405,6 +409,12 @@ Invoke-RestMethod http://127.0.0.1:3100/api/status -Headers @{ 'x-console-token'
 
 ## 10. 变更记录
 
+### v1.0.1 — 2026-10-20
+
+- 新增睡醒补消息：`start-bridge.bat` 启动时先运行 `catchup.mjs --once`，读取关机期间 owner 发来、尚未被回复的私聊，经 silent 提醒后由小鲸鱼用 `send-message` 补回；已实测补回一次，无重复。
+- 本地角色卡增加离线语义：电脑关机/被关掉=睡觉，重新开机=睡醒；`catchup.mjs` 的提示同步为“刚睡醒”。个人角色卡不随公开仓库发布。
+- 更新 `README-启动说明.md`、数据文件索引和本变更记录。
+
 ### v1.0 — 2026-10-20
 
 - 定义项目名、版本号和项目文档。
@@ -426,12 +436,12 @@ Invoke-RestMethod http://127.0.0.1:3100/api/status -Headers @{ 'x-console-token'
 
 ```text
 D:\Temp\qq-bridge\
-├─ VERSION                     # 版本号（v1.0）
+├─ VERSION                     # 版本号（v1.0.1）
 ├─ PROJECT.md                  # 本文档
 ├─ README-启动说明.md          # 启动/恢复
 ├─ README-QQ管理.md            # qq-admin 命令
 ├─ start-all.bat / .ps1        # 一键启动
-├─ start-bridge.bat            # 桥接 + proactive + diary
+├─ start-bridge.bat            # 桥接 + catchup + proactive + diary
 ├─ start-comfy.bat             # ComfyUI
 ├─ config.json                 # bridge 配置（含 token）
 ├─ roles\
@@ -440,13 +450,15 @@ D:\Temp\qq-bridge\
 │  ├─ qq-admin.mjs             # QQ 管理 CLI
 │  ├─ comfy-draw.mjs           # ComfyUI CLI
 │  ├─ proactive.mjs            # 主动消息
-│  └─ diary.mjs                # 日记
+│  ├─ diary.mjs                # 日记
+│  └─ catchup.mjs              # 睡醒补消息
 ├─ state\
 │  ├─ sessions.json
 │  ├─ token-usage.jsonl
 │  ├─ 小鲸鱼-日记.md
 │  ├─ diary-state.json
 │  ├─ proactive-state.json
+│  ├─ catchup-state.json
 │  └─ *.log
 └─ dsh-profile-backup-*        # DSH 配置备份
 ```
@@ -456,6 +468,6 @@ D:\Temp\qq-bridge\
 ## 12. 项目署名
 
 - 项目名：**小鲸鱼计划 / XiaoJingYu**
-- 版本：**v1.0**
+- 版本：**v1.0.1**
 - 性质：个人项目
 - 第三方：SnowLuma、qq-bridge、DeepSeek Harness、ComfyUI、anything-v5、ControlNet 模型；版权与许可证归各自作者

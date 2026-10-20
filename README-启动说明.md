@@ -1,6 +1,6 @@
 # DSH × QQ 桥接启动说明
 
-> 项目版本：**小鲸鱼计划 v1.0**  
+> 项目版本：**小鲸鱼计划 v1.0.1**  
 > 项目文档：[PROJECT.md](D:/Temp/qq-bridge/PROJECT.md)
 
 ## 当前账号
@@ -36,6 +36,7 @@
 - 画图/改图：`D:\Temp\qq-bridge\scripts\comfy-draw.mjs`（ComfyUI 8188），支持文生图、图生图、局部重绘、14 种 ControlNet、高清二段；画完用 `qq-admin.mjs send-image` 发回 QQ，QQ 里的图可先 `download-image` 下载。
 - 主动消息/自驱：`D:\Temp\qq-bridge\scripts\proactive.mjs`，默认随 `start-bridge.bat` 启动；静默 60 分钟、每 30–90 分钟检查、30% 概率、23:00–08:00 免打扰、每天最多 3 次。日志 `state\proactive.log`。
 - 小鲸鱼的日记：`D:\Temp\qq-bridge\scripts\diary.mjs`，默认随 `start-bridge.bat` 启动；每天 00:00 后为昨天写日记，08:00 后晨读最近 7 天；电脑关机时下次启动补记。日记文件 `state\小鲸鱼-日记.md`，日志 `state\diary.log`。
+- 睡醒补消息：`D:\Temp\qq-bridge\scripts\catchup.mjs`，随 `start-bridge.bat` 启动；读取主人在睡觉期间发、还没被回复的私聊，silent 提醒小鲸鱼补回，不会重复已回的消息。状态 `state\catchup-state.json`，日志 `state\catchup.log`；首次运行只建立基线，不补旧消息。
 - 切换到其他模式时，closed-agent 的完整工具会收回；人格仍在。
 
 ## 说明

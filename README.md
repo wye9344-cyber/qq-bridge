@@ -1,4 +1,4 @@
-# 小鲸鱼计划 v1.0（公开定制 fork）
+# 小鲸鱼计划 v1.0.1（公开定制 fork）
 
 本仓库是 [qq-bridge](https://github.com/Derpyu520/qq-bridge) 的公开 fork，用于维护「小鲸鱼」这套个人 QQ Agent 的定制层。
 
